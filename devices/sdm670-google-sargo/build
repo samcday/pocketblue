@@ -8,12 +8,15 @@ set -uexo pipefail
 cp -arfT files/etc /etc
 
 # Firmware and Qualcomm userspace follow the existing SDM845 image policy.
+# droid-juicer's system_a/system_b extraction path depends on the dynamic-
+# partition mapping template shipped by make-dynpart-mappings.
 # lvm2 is deliberately part of the immutable image: PocketBoot may load the
 # BLS artifacts from XBOOTLDR while the downstream initrd activates root on an
 # LV.
 dnf -y install \
     droid-juicer \
     lvm2 \
+    make-dynpart-mappings \
     pd-mapper \
     qcom-firmware \
     qrtr \
