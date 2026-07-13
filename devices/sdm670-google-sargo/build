@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -uexo pipefail
+
+# Device policy and the ARKified sdm670 kernel repository must be present
+# before the replacement kernel is installed so kernel-install/dracut sees the
+# sargo and LVM configuration.
+cp -arfT files/etc /etc
+
+# Firmware and Qualcomm userspace follow the existing SDM845 image policy.
+# droid-juicer's system_a/system_b extraction path depends on the dynamic-
+# partition mapping template shipped by make-dynpart-mappings.
+# lvm2 is deliberately part of the immutable image: PocketBoot may load the
+# BLS artifacts from XBOOTLDR while the downstream initrd activates root on an
+# LV.
+dnf -y install \
+    droid-juicer \
+    lvm2 \
+    make-dynpart-mappings \
+    pd-mapper \
+    qcom-firmware \
+    qrtr \
+    rmtfs \
+    tqftpserv
+
+systemctl enable \
+    droid-juicer.service \
+    rmtfs.service \
+    tqftpserv.service
+
+rm -rf /etc/droid-juicer
+rmdir /usr/lib/firmware/updates
+ln -sf /var/lib/firmware-extract /usr/lib/firmware/updates
+
+# Replace Fedora's generic kernel with the ARKified sdm670 build. Keep /boot
+# mounted while the RPM transaction runs: its kernel-install output is the BLS
+# and XBOOTLDR contract consumed by U-Boot or PocketBoot.
+mkdir -p /boot/dtb
+dnf -y remove \
+    kernel \
+    kernel-core \
+    kernel-modules \
+    kernel-modules-core \
+    kernel-modules-extra \
+    kernel-modules-internal \
+    kernel-headers
+rm -rf /usr/lib/modules/* /lib/modules/*
+dnf -y install --setopt=install_weak_deps=False kernel
+
+set -- /usr/lib/modules/*
+[ "$#" -eq 1 ]
+module_dir=$1
+[ -f "$module_dir/vmlinuz" ]
+[ -f "$module_dir/dtb/qcom/sdm670-google-sargo.dtb" ]
+[ -f "$module_dir/initramfs.img" ]
+
+rm -rf /boot/dtb

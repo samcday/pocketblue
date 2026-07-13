@@ -13,6 +13,7 @@ on:
         options:
           - nothing-spacewar
           - qualcomm-sdm845
+          - sdm670-google-sargo
           - xiaomi-nabu
           - xiaomi-nabu-rodriguezst
           - xiaomi-pipa
