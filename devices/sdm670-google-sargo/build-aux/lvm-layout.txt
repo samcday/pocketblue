@@ -1,0 +1,20 @@
+sdm670-google-sargo first-pass boot contract
+
+This archive intentionally contains no fastboot flash script. A loader such as
+U-Boot or PocketBoot is expected to consume the normal PocketBlue layout:
+
+  images/fedora_esp.raw     EFI System Partition filesystem image
+  images/fedora_boot.raw    XBOOTLDR filesystem image containing BLS artifacts
+  images/fedora_rootfs.raw  root filesystem partition image
+
+The three images may be written to separate LVs. The initramfs contains
+dracut's lvm module, but deployment-specific activation and root arguments are
+loader policy and are not hard-coded into the distro image.
+
+For a root image written to an LV, preserve the root=UUID= option emitted in
+the BLS entry and add the activation request at the last mile:
+
+  rd.lvm.lv=<volume-group>/<root-logical-volume>
+
+Dracut enables rd.lvm by default when rd.lvm.lv is present. Naming the exact
+LV avoids activating every LV in the volume group.

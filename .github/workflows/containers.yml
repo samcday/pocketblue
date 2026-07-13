@@ -33,6 +33,7 @@ on:
           - 'all'
           - 'nothing-spacewar'
           - 'qualcomm-sdm845'
+          - 'sdm670-google-sargo'
           - 'xiaomi-nabu'
           - 'xiaomi-nabu-rodriguezst'
           - 'xiaomi-pipa'
@@ -82,6 +83,7 @@ jobs:
           device: ${{ inputs.device || '' }}
           device_list: |
             qualcomm-sdm845
+            sdm670-google-sargo
             xiaomi-nabu
             xiaomi-nabu-rodriguezst
             xiaomi-pipa
