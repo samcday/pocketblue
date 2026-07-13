@@ -74,7 +74,9 @@ jobs:
 
   images:
     needs: desktops
-    runs-on: ubuntu-26.04-arm
+    # bootc-image-builder needs a privileged nested mount. The 26.04 ARM
+    # runner denies it even inside the workflow's privileged container.
+    runs-on: ubuntu-24.04-arm
     strategy:
       fail-fast: false
       matrix:
