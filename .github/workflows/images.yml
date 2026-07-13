@@ -57,7 +57,7 @@ on:
 
 jobs:
   desktops:
-    runs-on: ubuntu-26.04-arm
+    runs-on: ubuntu-24.04-arm
     outputs:
       desktops: ${{ steps.desktops.outputs.desktops }}
     steps:
@@ -75,7 +75,7 @@ jobs:
 
   images:
     needs: desktops
-    runs-on: ubuntu-26.04-arm
+    runs-on: ubuntu-24.04-arm
     strategy:
       fail-fast: false
       matrix:
