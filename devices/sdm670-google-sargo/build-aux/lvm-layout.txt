@@ -11,10 +11,14 @@ The three images may be written to separate LVs. The initramfs contains
 dracut's lvm module, but deployment-specific activation and root arguments are
 loader policy and are not hard-coded into the distro image.
 
-For a root image written to an LV, preserve the root=UUID= option emitted in
-the BLS entry and add the activation request at the last mile:
+Preserve the filesystem-UUID root= and boot= options emitted in the BLS entry.
+For the three images above, add an exact activation request for every LV at the
+last mile:
 
   rd.lvm.lv=<volume-group>/<root-logical-volume>
+  rd.lvm.lv=<volume-group>/<xbootldr-logical-volume>
+  rd.lvm.lv=<volume-group>/<esp-logical-volume>
 
 Dracut enables rd.lvm by default when rd.lvm.lv is present. Naming the exact
-LV avoids activating every LV in the volume group.
+LVs avoids activating every LV in the volume group and makes the conventional
+/boot and /boot/efi mounts independent of a later udev autoactivation pass.
